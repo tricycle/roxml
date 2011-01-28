@@ -87,7 +87,7 @@ module ROXML # :nodoc:
       def xml_namespace(namespace)
         @roxml_namespace = namespace.to_s
       end
-      
+
       # Sets up a mapping of namespace prefixes to hrefs, to be used by this class.
       # These namespace prefixes are independent of what appears in the xml, only
       # the namespace hrefs themselves need to match
@@ -443,10 +443,7 @@ module ROXML # :nodoc:
         opts = syms.extract_options!
         syms.map do |sym|
           Definition.new(sym, opts, &block).tap do |attr|
-            if roxml_attrs.map(&:accessor).include? attr.accessor
-              raise "Accessor #{attr.accessor} is already defined as XML accessor in class #{self.name}"
-            end
-            @roxml_attrs << attr
+            @roxml_attrs << attr unless roxml_attrs.map(&:accessor).include? attr.accessor
           end
         end
       end
@@ -493,7 +490,7 @@ module ROXML # :nodoc:
       # do not work without one.
       def tag_name
         return roxml_tag_name if roxml_tag_name
-        
+
         if tag_name = name.split('::').last
           roxml_naming_convention ? roxml_naming_convention.call(tag_name.underscore) : tag_name.downcase
         end
